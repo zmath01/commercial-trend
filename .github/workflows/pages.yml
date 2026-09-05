@@ -1,0 +1,54 @@
+name: Build & Deploy Dashboard
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 2 * * 1"   # weekly refresh (Mon 02:00 UTC)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      # Default: deterministic sample data -> CI is reproducible & key-free.
+      # For a live refresh, change to: python main.py --live
+      # and add GITHUB_TOKEN (auto-provided) for GitHub API rate limits.
+      - name: Run pipeline
+        run: python main.py --sample --save-panel data/panel.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

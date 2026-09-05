@@ -1,0 +1,4 @@
+# Pinned-ish minimums; all pure wheels, install fast in CI.
+numpy>=1.26
+scikit-learn>=1.4
+requests>=2.31

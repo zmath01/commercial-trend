@@ -1,0 +1,9 @@
+field,papers_latest,papers_mean,papers_cagr,papers_burst,repos_new_latest,repos_new_mean,repos_new_cagr,repos_new_burst,questions_latest,questions_mean,questions_cagr,questions_burst,csi_latest
+AI / Machine Learning,2726909,1272939.6,0.205,1,71217,27621.2,0.289,1,471,10045.4,-0.638,0,0.65
+Applied Mathematics,2611411,1478203.8,0.15,1,3054,1457.5,0.205,1,792,11291.6,-0.612,0,0.65
+Computer Science (general),3264476,2273207.6,0.073,0,12025,7832.8,0.016,1,1884,27603.5,-0.607,0,0.593
+Software Engineering,1515112,1002015.5,0.071,1,10300,2952.3,0.481,1,314,1175.5,-0.481,0,0.645
+Quantitative Finance,1559499,851005.5,0.161,1,2550,501.5,0.844,1,1079,25506.4,-0.706,0,0.65
+Cryptocurrency / FinTech,336670,169027.9,0.182,1,5366,4997.9,-0.209,0,0,0,,0,0.685
+Quantum Computing / Cryptography,92494,52706.7,0.107,1,0,0,,0,12,28.4,-0.347,0,0.526
+Chips / GPU / Memory Hardware,0,0,,0,0,0,,0,0,0,,0,0.0
