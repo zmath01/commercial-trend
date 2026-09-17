@@ -5,19 +5,8 @@ Two modes:
   --live    hit the real APIs (disk-cached, polite)
   --sample  generate a deterministic synthetic panel (offline, CI-safe)
 
-Output data model ("panel"):
-{
-  "years": [y0, ..., yn],
-  "fields": {
-     field_key: {
-        "label": str,
-        "papers":    [int per year],
-        "repos_new": [int per year],
-        "questions": [int per year],
-     }, ...
-  }
-}
-Everything is per-field yearly series -> memory footprint is trivially small.
+The tracked fields and their canonical 23-category arXiv mapping live in
+pipeline/topics.py.
 """
 
 from __future__ import annotations
@@ -68,6 +57,11 @@ def _get_json(url: str, params: dict | None = None, cache_key: str | None = None
     raise RuntimeError(f"failed after {retries} attempts: {url}")
 
 
+def _read_cache(cache_key: str) -> dict | None:
+    p = _cache_path(cache_key)
+    return json.loads(p.read_text()) if p.exists() else None
+
+
 def openalex_yearly(query: str) -> list[int]:
     """Papers per year aligned to YEARS (OpenAlex /works group_by)."""
     ck = f"openalex_{query}"
@@ -80,7 +74,7 @@ def openalex_yearly(query: str) -> list[int]:
                 "https://api.openalex.org/works",
                 params={
                     "search": query,
-                    "filter": f"from_publication_date:{YEARS[0]}-01-01,{YEARS[-1]}-12-31",
+                    "filter": f"from_publication_date:{YEARS[0]}-01-01,to_publication_date:{YEARS[-1]}-12-31",
                     "group_by": "publication_year",
                 },
                 cache_key=ck,
@@ -97,11 +91,6 @@ def openalex_yearly(query: str) -> list[int]:
         if y in papers:
             papers[y] = bucket.get("count", 0)
     return [papers[y] for y in YEARS]
-
-
-def _read_cache(cache_key: str) -> dict | None:
-    p = _cache_path(cache_key)
-    return json.loads(p.read_text()) if p.exists() else None
 
 
 def github_repos_new(keyword: str) -> list[int]:
