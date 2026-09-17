@@ -1,13 +1,15 @@
-"""Watchlist: the fields we track, mapped onto each data source.
+"""Watchlist: ten commercial fields with a shared arXiv taxonomy.
 
-OpenAlex topic matching is by keyword search over topic display names
-(resolved to stable topic IDs at ingest time). GitHub/StackOverflow signals
-use explicit keyword / tag lists. Extend freely — this is config, not code.
+The arXiv category list is deliberately identical to commercial-trend-fusion:
+23 categories grouped into 10 commercial fields. OpenAlex/GitHub/StackOverflow
+signals remain field-level; arxiv_categories provides the canonical research
+scope for cross-repository comparability.
 """
 
 FIELDS = {
     "artificial_intelligence": {
         "label": "AI / Machine Learning",
+        "arxiv_categories": ["cs.AI", "cs.LG", "cs.CL", "cs.CV", "stat.ML", "cs.NE"],
         "openalex_queries": ["machine learning", "deep learning", "large language model",
                              "reinforcement learning", "neural network"],
         "github_keywords": ["machine-learning", "deep-learning", "llm", "transformer"],
@@ -15,61 +17,81 @@ FIELDS = {
     },
     "applied_math": {
         "label": "Applied Mathematics",
-        "openalex_queries": ["optimization", "numerical analysis", "stochastic process",
-                             "graph theory", "computational mathematics"],
+        "arxiv_categories": ["math.OC", "math.NA"],
+        "openalex_queries": ["optimization", "numerical analysis", "computational mathematics",
+                             "optimal control"],
         "github_keywords": ["optimization", "numerical-methods", "scientific-computing"],
         "so_tags": ["numpy", "scipy", "cvxpy", "networkx"],
     },
     "computer_science": {
-        "label": "Computer Science (general)",
-        "openalex_queries": ["computer science", "algorithms", "distributed system",
-                             "database", "computer vision"],
-        "github_keywords": ["algorithms", "distributed-systems", "database"],
-        "so_tags": ["django", "flask", "fastapi", "sqlalchemy"],
+        "label": "Computer Science",
+        "arxiv_categories": ["cs.DS", "cs.DC"],
+        "openalex_queries": ["algorithms", "distributed system", "data structures",
+                             "parallel computing"],
+        "github_keywords": ["algorithms", "distributed-systems", "parallel-computing"],
+        "so_tags": ["algorithm", "distributed", "parallel-processing"],
     },
     "software_engineering": {
         "label": "Software Engineering",
+        "arxiv_categories": ["cs.SE", "cs.PL"],
         "openalex_queries": ["software engineering", "programming language",
-                             "software testing", "devops"],
+                             "software testing", "software maintenance"],
         "github_keywords": ["devops", "ci-cd", "testing-framework", "linter"],
         "so_tags": ["pytest", "black", "mypy", "ruff"],
     },
+    "security_crypto": {
+        "label": "Security / Cryptography",
+        "arxiv_categories": ["cs.CR"],
+        "openalex_queries": ["cryptography", "cybersecurity", "privacy enhancing technology",
+                             "authentication"],
+        "github_keywords": ["cryptography", "cybersecurity", "zero-knowledge", "privacy"],
+        "so_tags": ["cryptography", "security", "encryption", "oauth-2.0"],
+    },
     "quant_finance": {
         "label": "Quantitative Finance",
+        "arxiv_categories": ["q-fin.CP", "q-fin.MF", "q-fin.RM", "q-fin.ST", "q-fin.TR"],
         "openalex_queries": ["financial mathematics", "portfolio optimization",
                              "algorithmic trading", "risk management", "option pricing"],
         "github_keywords": ["quantitative-finance", "algorithmic-trading", "backtesting"],
         "so_tags": ["pandas", "zipline", "backtrader", "quantlib", "quantitative-finance"],
     },
-    "crypto_fintech": {
-        "label": "Cryptocurrency / FinTech",
-        "openalex_queries": ["blockchain", "cryptocurrency", "smart contract",
-                             "decentralized finance", "payment system"],
-        "github_keywords": ["blockchain", "ethereum", "defi", "smart-contracts", "web3"],
-        "so_tags": ["web3", "ethereum", "solidity", "blockchain", "defi"],
+    "fintech": {
+        "label": "FinTech",
+        "arxiv_categories": ["cs.CE"],
+        "openalex_queries": ["financial technology", "payment system", "digital payments",
+                             "financial computing"],
+        "github_keywords": ["fintech", "payments", "payment-gateway", "open-banking"],
+        "so_tags": ["stripe-payments", "paypal", "payment", "fintech"],
     },
     "quantum_computing": {
-        "label": "Quantum Computing / Cryptography",
-        "openalex_queries": ["quantum computing", "quantum algorithm",
-                             "quantum cryptography", "quantum error correction",
-                             "post-quantum cryptography"],
-        "github_keywords": ["quantum-computing", "quantum-algorithms", "post-quantum"],
+        "label": "Quantum Computing",
+        "arxiv_categories": ["quant-ph"],
+        "openalex_queries": ["quantum computing", "quantum algorithm", "quantum error correction",
+                             "quantum information"],
+        "github_keywords": ["quantum-computing", "quantum-algorithms", "quantum-information"],
         "so_tags": ["qiskit", "cirq", "pennylane", "quantum-computing"],
     },
     "chips_hardware": {
-        "label": "Chips / GPU / Memory Hardware",
+        "label": "Chips / GPU / Storage / Architecture",
+        "arxiv_categories": ["cs.AR", "cs.ET"],
         "openalex_queries": ["graphics processing unit", "semiconductor",
-                             "computer architecture", "memory system",
-                             "neuromorphic computing", "chip design"],
+                             "computer architecture", "memory system", "chip design"],
         "github_keywords": ["gpu-computing", "cuda", "chip-design", "riscv", "fpga"],
         "so_tags": ["cuda", "gpu", "numba", "fpga", "riscv"],
+    },
+    "digital_markets": {
+        "label": "Digital Markets / Mechanism Design",
+        "arxiv_categories": ["cs.GT"],
+        "openalex_queries": ["mechanism design", "electronic commerce", "market design",
+                             "computational game theory"],
+        "github_keywords": ["mechanism-design", "market-design", "game-theory", "auction"],
+        "so_tags": ["game-theory", "auction", "marketplace", "e-commerce"],
     },
 }
 
 # Composite index weights (declared explicitly per THEORY.md section 2.2d).
-# Each weight applies to the min-max-normalized yearly signal.
 CSI_WEIGHTS = {
-    "repos_new": 0.40,     # new GitHub repos this year (engineering energy)
-    "questions": 0.35,     # StackOverflow questions this year (community adoption)
-    "papers": 0.25,        # publication volume (research activity)
+    "repos_new": 0.40,
+    "questions": 0.35,
+    "papers": 0.25,
 }
