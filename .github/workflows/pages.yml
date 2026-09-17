@@ -30,11 +30,10 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
 
-      # Default: deterministic sample data -> CI is reproducible & key-free.
-      # For a live refresh, change to: python main.py --live
-      # and add GITHUB_TOKEN (auto-provided) for GitHub API rate limits.
-      - name: Run pipeline
-        run: python main.py --sample --save-panel data/panel.json
+      # Live real-data refresh. The built-in GitHub Actions token is used for
+      # GitHub API authentication; no personal token is stored in the repo.
+      - name: Run live pipeline
+        run: python main.py --live --save-panel data/panel.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
