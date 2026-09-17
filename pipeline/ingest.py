@@ -33,14 +33,9 @@ import requests
 from .topics import FIELDS
 
 CACHE_DIR = Path("data/cache")
-YEARS = list(range(2015, 2026))  # 2015..2025
-
+YEARS = list(range(2015, 2026))
 UA = "commercial-trend/0.1 (mailto:commercial-trend@users.noreply.github.com)"
 
-
-# --------------------------------------------------------------------------- #
-# HTTP helpers with disk cache
-# --------------------------------------------------------------------------- #
 
 def _cache_path(key: str) -> Path:
     safe = "".join(c if c.isalnum() or c in "-_" else "_" for c in key)
@@ -68,24 +63,13 @@ def _get_json(url: str, params: dict | None = None, cache_key: str | None = None
         if cache_key:
             CACHE_DIR.mkdir(parents=True, exist_ok=True)
             _cache_path(cache_key).write_text(json.dumps(data))
-        time.sleep(0.4)  # be polite even inside polite pool
+        time.sleep(0.4)
         return data
     raise RuntimeError(f"failed after {retries} attempts: {url}")
 
 
-# --------------------------------------------------------------------------- #
-# OpenAlex: papers & citations per year for a keyword query
-# --------------------------------------------------------------------------- #
-
 def openalex_yearly(query: str) -> list[int]:
-    """Papers per year aligned to YEARS (OpenAlex /works group_by).
-
-    Note: group_by buckets only carry `count` (no citation sums), so the
-    research signal is publication volume. For a production run you'd resolve
-    OpenAlex Topic IDs first; search-filter keeps this client dependency-free
-    and good enough at field granularity. Cache is read without network;
-    network errors degrade to 0.
-    """
+    """Papers per year aligned to YEARS (OpenAlex /works group_by)."""
     ck = f"openalex_{query}"
     cached = _read_cache(ck)
     if cached is not None:
@@ -96,8 +80,7 @@ def openalex_yearly(query: str) -> list[int]:
                 "https://api.openalex.org/works",
                 params={
                     "search": query,
-                    "filter": f"from_publication_date:{YEARS[0]}-01-01,"
-                              f"to_publication_date:{YEARS[-1]}-12-31",
+                    "filter": f"from_publication_date:{YEARS[0]}-01-01,{YEARS[-1]}-12-31",
                     "group_by": "publication_year",
                 },
                 cache_key=ck,
@@ -116,22 +99,13 @@ def openalex_yearly(query: str) -> list[int]:
     return [papers[y] for y in YEARS]
 
 
-# --------------------------------------------------------------------------- #
-# GitHub: new repos per year for a topic keyword
-# --------------------------------------------------------------------------- #
-
 def _read_cache(cache_key: str) -> dict | None:
     p = _cache_path(cache_key)
     return json.loads(p.read_text()) if p.exists() else None
 
 
 def github_repos_new(keyword: str) -> list[int]:
-    """New repos per year for a GitHub topic keyword (one query per year).
-
-    Network errors (timeout / SSL / proxy) are caught per year and recorded
-    as 0 so a flaky connection never crashes the whole run. Already-cached
-    years are read without hitting the network.
-    """
+    """New repos per year for a GitHub topic keyword."""
     token = os.environ.get("GITHUB_TOKEN")
     headers = {"Authorization": f"Bearer {token}"} if token else None
     out = []
@@ -141,12 +115,10 @@ def github_repos_new(keyword: str) -> list[int]:
         if cached is not None:
             out.append(cached.get("total_count", 0))
             continue
-        # only hit the network if we have no cache for this year
         try:
             data = _get_json(
                 "https://api.github.com/search/repositories",
-                params={"q": f"topic:{keyword} created:{y}-01-01..{y}-12-31",
-                        "per_page": 1},
+                params={"q": f"topic:{keyword} created:{y}-01-01..{y}-12-31", "per_page": 1},
                 cache_key=ck,
                 headers=headers,
             )
@@ -157,10 +129,6 @@ def github_repos_new(keyword: str) -> list[int]:
     return out
 
 
-# --------------------------------------------------------------------------- #
-# StackOverflow: questions per year per tag (Stack Exchange API, free, no key)
-# --------------------------------------------------------------------------- #
-
 def _year_epoch(y: int, end: bool = False) -> int:
     import calendar
     import datetime as dt
@@ -170,12 +138,7 @@ def _year_epoch(y: int, end: bool = False) -> int:
 
 
 def so_questions_yearly(tag: str) -> list[int]:
-    """Total questions per year for a StackOverflow tag.
-
-    Uses filter='total' so each call returns one number. Unauthenticated
-    quota is 300 req/day — with disk cache a full field sweep fits easily.
-    Network errors degrade to 0 per year.
-    """
+    """Total questions per year for a StackOverflow tag."""
     out = []
     for y in YEARS:
         ck = f"so_{tag}_{y}"
@@ -198,10 +161,6 @@ def so_questions_yearly(tag: str) -> list[int]:
     return out
 
 
-# --------------------------------------------------------------------------- #
-# Live panel assembly
-# --------------------------------------------------------------------------- #
-
 def fetch_live_panel() -> dict:
     panel = {"years": YEARS, "fields": {}}
     for key, spec in FIELDS.items():
@@ -210,55 +169,36 @@ def fetch_live_panel() -> dict:
         for q in spec["openalex_queries"]:
             p = openalex_yearly(q)
             papers = [a + b for a, b in zip(papers, p)]
-
         repos = [0] * len(YEARS)
         for kw in spec["github_keywords"]:
             r = github_repos_new(kw)
             repos = [a + b for a, b in zip(repos, r)]
-
         questions = [0] * len(YEARS)
         for tag in spec["so_tags"]:
             qs = so_questions_yearly(tag)
             questions = [a + b for a, b in zip(questions, qs)]
-
         panel["fields"][key] = {
-            "label": spec["label"],
-            "papers": papers,
-            "repos_new": repos,
-            "questions": questions,
+            "label": spec["label"], "papers": papers,
+            "repos_new": repos, "questions": questions,
         }
     return panel
 
 
-# --------------------------------------------------------------------------- #
-# Deterministic synthetic panel (offline / CI). NOT real data.
-# --------------------------------------------------------------------------- #
-
 def make_sample_panel(seed: int = 42) -> dict:
-    """Synthetic panel with planted structure:
-
-    - every field grows (secular inflation)
-    - quantum_computing & chips_hardware planted as *late accelerators*
-      (commercial signals inflect ~2021 while papers grow steadily)
-    - crypto_fintech planted as boom-bust (2021 spike, then decay)
-    This gives the model something real to learn and the site something
-    interesting to show, while remaining 100% reproducible.
-    """
+    """Deterministic synthetic panel; never presented as real data."""
     rng = random.Random(seed)
     n = len(YEARS)
     panel = {"years": YEARS, "fields": {}}
 
     def growth_series(base: float, rate: float, noise: float = 0.08) -> list[int]:
-        out = []
-        v = base
+        out, v = [], base
         for _ in range(n):
             v *= rate * (1 + rng.uniform(-noise, noise))
             out.append(max(1, int(v)))
         return out
 
     def late_accel(base: float, rate: float, kick_year: int, kick: float) -> list[int]:
-        out = []
-        v = base
+        out, v = [], base
         for y in YEARS:
             r = rate * (kick if y >= kick_year else 1.0)
             v *= r * (1 + rng.uniform(-0.06, 0.06))
@@ -266,8 +206,7 @@ def make_sample_panel(seed: int = 42) -> dict:
         return out
 
     def boom_bust(base: float, up: float, down: float, peak_year: int) -> list[int]:
-        out = []
-        v = base
+        out, v = [], base
         for y in YEARS:
             r = up if y <= peak_year else down
             v *= r * (1 + rng.uniform(-0.07, 0.07))
@@ -279,28 +218,20 @@ def make_sample_panel(seed: int = 42) -> dict:
         if key in ("quantum_computing", "chips_hardware"):
             repos = late_accel(200, 1.25, 2021, 1.9)
             dls = late_accel(50_000, 1.30, 2021, 2.2)
-        elif key == "crypto_fintech":
+        elif key == "fintech":
             repos = boom_bust(500, 1.8, 0.75, 2021)
             dls = boom_bust(80_000, 1.9, 0.7, 2021)
         else:
             repos = growth_series(300, 1.18)
             dls = growth_series(60_000, 1.22)
         panel["fields"][key] = {
-            "label": spec["label"],
-            "papers": papers,
-            "repos_new": repos,
-            "questions": dls,
+            "label": spec["label"], "papers": papers,
+            "repos_new": repos, "questions": dls,
         }
     return panel
 
 
 def build_panel_from_cache() -> dict:
-    """Assemble a panel using ONLY existing cache files — no network.
-
-    Missing entries are filled with 0. This lets you run analysis on whatever
-    your flaky connection managed to cache without re-hitting any API and
-    without touching --sample.
-    """
     panel = {"years": YEARS, "fields": {}}
     for key, spec in FIELDS.items():
         papers = [0] * len(YEARS)
@@ -317,47 +248,35 @@ def build_panel_from_cache() -> dict:
                 if y in by_year:
                     by_year[y] = b.get("count", 0)
             papers = [a + b for a, b in zip(papers, [by_year[y] for y in YEARS])]
-
         repos = [0] * len(YEARS)
         for kw in spec["github_keywords"]:
             for i, y in enumerate(YEARS):
                 d = _read_cache(f"github_{kw}_{y}")
                 if d is not None:
                     repos[i] += d.get("total_count", 0)
-
         questions = [0] * len(YEARS)
         for tag in spec["so_tags"]:
             for i, y in enumerate(YEARS):
                 d = _read_cache(f"so_{tag}_{y}")
                 if d is not None:
                     questions[i] += d.get("total", 0)
-
         panel["fields"][key] = {
-            "label": spec["label"],
-            "papers": papers,
-            "repos_new": repos,
-            "questions": questions,
+            "label": spec["label"], "papers": papers,
+            "repos_new": repos, "questions": questions,
         }
     return panel
 
 
 def cache_coverage() -> dict:
-    """Per-field, per-signal, per-year coverage matrix (1=cached, 0=missing)."""
     cov = {"years": YEARS, "fields": {}}
     for key, spec in FIELDS.items():
         cell = {"papers": [], "repos_new": [], "questions": []}
-        # papers: one cache file covers all years
-        has_oa = any(_read_cache(f"openalex_{q}") is not None
-                     for q in spec["openalex_queries"])
+        has_oa = any(_read_cache(f"openalex_{q}") is not None for q in spec["openalex_queries"])
         cell["papers"] = [int(has_oa)] * len(YEARS)
-        cell["repos_new"] = [
-            int(any(_read_cache(f"github_{kw}_{y}") is not None
-                    for kw in spec["github_keywords"])) for y in YEARS
-        ]
-        cell["questions"] = [
-            int(any(_read_cache(f"so_{tag}_{y}") is not None
-                    for tag in spec["so_tags"])) for y in YEARS
-        ]
+        cell["repos_new"] = [int(any(_read_cache(f"github_{kw}_{y}") is not None
+                                      for kw in spec["github_keywords"])) for y in YEARS]
+        cell["questions"] = [int(any(_read_cache(f"so_{tag}_{y}") is not None
+                                       for tag in spec["so_tags"])) for y in YEARS]
         cov["fields"][key] = cell
     return cov
 
