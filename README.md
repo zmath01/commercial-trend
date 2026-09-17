@@ -12,8 +12,13 @@
 
 ## 追踪领域 / Tracked fields
 
-AI/ML · 应用数学 · 计算机科学 · 软件工程 · 量化金融 · 加密货币/金融科技 ·
-量子计算/量子密码 · 芯片（GPU/存储/架构）
+统一采用与 `commercial-trend-fusion` 相同的 **10 个商业领域 / 23 个 arXiv 分类**：
+
+AI/ML · 应用数学 · 计算机科学 · 软件工程 · 安全/加密 · 量化金融 · 金融科技 ·
+量子计算 · 芯片（GPU/存储/架构） · 数字市场/机制设计
+
+完整 canonical mapping 见 `pipeline/topics.py`；fusion 语料抓取配置见
+`commercial-trend-fusion/config.yaml`。
 
 ## 它做什么 / What it does
 
@@ -65,21 +70,15 @@ cd dist && python3 -m http.server 8000
 自动构建并部署。首次使用需在仓库设置里
 **Settings → Pages → Build and deployment → Source 选 "GitHub Actions"**。
 
-CI 默认跑 `--sample`（可复现、免 key）。想每周刷新真实数据，
-把 workflow 里的 `--sample` 改成 `--live` 即可（`GITHUB_TOKEN` 已自动注入）。
-
-SSH 手动部署（你的备用方案）：
-
-```bash
-.venv/bin/python main.py --live
-rsync -avz dist/ user@your-server:/var/www/commercial-trend/
-```
+CI 现在跑 `--live`，使用 GitHub Actions 内置的 `GITHUB_TOKEN`，不把个人 token
+写入仓库。若需要更高的 GitHub API 配额，应通过 GitHub Actions secret 配置个人
+token，而不是把 token 写进代码或 workflow。
 
 ## 目录结构
 
 ```
 pipeline/
-  topics.py    # 领域配置 + CSI 权重（改这里就能换追踪对象）
+  topics.py    # 十领域 + 23 个 arXiv 分类映射 + CSI 权重
   ingest.py    # OpenAlex / GitHub / Stack Exchange 客户端 + 确定性样本生成器
   signals.py   # 增长、Kleinberg 突发、CSI、共现图与链接预测指标
   model.py     # 特征、逻辑回归、walk-forward 评估、当前排名
