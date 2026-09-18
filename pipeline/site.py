@@ -52,8 +52,9 @@ TEMPLATE = """<!DOCTYPE html>
   <div class="card note">
     <b>Current status:</b> this dashboard is a live activity-signal snapshot, not an
     independently validated commercialization forecast. The current target is future
-    CSI growth, and the latest panel covers 2015–2025. Source completeness and unusually
-    large recent Quantum / Stack Overflow values still require auditing.
+    CSI growth, and the latest panel covers 2015–2025. The latest mechanical ranking is
+    dominated by the explosive recent repository / Stack Overflow growth of Quantum and
+    Chips / Hardware. Source completeness and query semantics still require auditing.
   </div>
 
   <h2>当前排名（综合 CSI + 动量）</h2>
