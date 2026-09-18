@@ -12,13 +12,13 @@
 
 ## 追踪领域 / Tracked fields
 
-统一采用与 `commercial-trend-fusion` 相同的 **15 个商业领域 / 32 个 arXiv 分类**：
+统一采用与 `commercial-trend-fusion` 相同的 **15 个监测领域 / 32 个 arXiv 分类**：
 
 AI/ML · 应用数学 · 计算机科学 · 软件工程 · 安全/加密 · 量化金融 · 金融科技 ·
 量子计算 · 量子材料/电子 · 统计/复杂系统/涌现 · 量子模拟/超冷物质 · 光子学 ·
 计算物理/科学计算 · 芯片（GPU/存储/架构） · 数字市场/机制设计
 
-完整 canonical mapping 见 `pipeline/topics.py`；fusion 语料抓取配置见
+其中 FinTech 没有专属 arXiv 分类，使用 OpenAlex/GitHub/StackOverflow 多源信号；其余 14 个研究型领域由 32 个 arXiv 分类提供研究范围。完整 canonical mapping 见 `pipeline/topics.py`；fusion 语料抓取配置见
 `commercial-trend-fusion/config.yaml`。
 
 ## 它做什么 / What it does
