@@ -1,9 +1,10 @@
-"""Watchlist: ten commercial fields with a shared arXiv taxonomy.
+"""Watchlist: commercialization-monitoring fields with a shared arXiv taxonomy.
 
 The arXiv category list is deliberately identical to commercial-trend-fusion:
-32 categories grouped into 15 commercial fields. OpenAlex/GitHub/StackOverflow
-signals remain field-level; arxiv_categories provides the canonical research
-scope for cross-repository comparability.
+32 arXiv categories are mapped to 14 research-backed commercialization domains;
+FinTech is a separate 15th monitoring domain with no dedicated arXiv category.
+OpenAlex/GitHub/StackOverflow signals remain field-level; arxiv_categories provides
+the canonical research scope where an arXiv proxy exists.
 """
 
 FIELDS = {
@@ -57,9 +58,9 @@ FIELDS = {
     },
     "fintech": {
         "label": "FinTech",
-        "arxiv_categories": ["cs.CE"],
+        "arxiv_categories": [],
         "openalex_queries": ["financial technology", "payment system", "digital payments",
-                             "financial computing"],
+                             "digital banking", "open banking", "financial infrastructure"],
         "github_keywords": ["fintech", "payments", "payment-gateway", "open-banking"],
         "so_tags": ["stripe-payments", "paypal", "payment", "fintech"],
     },
@@ -102,10 +103,10 @@ FIELDS = {
         "so_tags": ["optics", "photonics", "laser", "fiber-optics"],
     },
     "computational_physics": {
-        "label": "Computational Physics / Scientific Computing",
-        "arxiv_categories": ["physics.comp-ph"],
+        "label": "Computational Science / Engineering",
+        "arxiv_categories": ["physics.comp-ph", "cs.CE"],
         "openalex_queries": ["computational physics", "scientific computing", "physics simulation",
-                             "numerical simulation"],
+                             "numerical simulation", "computational engineering"],
         "github_keywords": ["computational-physics", "scientific-computing", "physics-simulation"],
         "so_tags": ["python", "numpy", "scipy", "simulation"],
     },
@@ -127,7 +128,7 @@ FIELDS = {
     },
 }
 
-# Composite index weights (declared explicitly per THEORY.md section 2.2d).
+# Composite index weights for multi-source commercialization signals.
 CSI_WEIGHTS = {
     "repos_new": 0.40,
     "questions": 0.35,
