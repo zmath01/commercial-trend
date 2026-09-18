@@ -48,8 +48,13 @@ TEMPLATE = """<!DOCTYPE html>
 <body>
 <div class="wrap">
   <h1>Commercial Trend</h1>
-  <div class="sub">哪些研究领域正在走向商业化？多源信号（文献 · 代码 · 包生态）
-    的可证伪预测看板 · 数据更新时间 __STAMP__</div>
+  <div class="sub">研究 / 工程活动的商业化相关信号监测 · 数据更新时间 __STAMP__</div>
+  <div class="card note">
+    <b>Current status:</b> this dashboard is a live activity-signal snapshot, not an
+    independently validated commercialization forecast. The current target is future
+    CSI growth, and the latest panel covers 2015–2025. Source completeness and unusually
+    large recent Quantum / Stack Overflow values still require auditing.
+  </div>
 
   <h2>当前排名（综合 CSI + 动量）</h2>
   <div class="card">
@@ -87,14 +92,14 @@ TEMPLATE = """<!DOCTYPE html>
       <tbody></tbody>
     </table>
     <p class="note">任务：预测某领域 CSI 在未来 __HORIZON__ 年的增长是否超过横截面中位数。
-      <code>graph_only</code> 基线仅使用共现图启发式（含两跳有效电导）——
-      <b>full 相对它的增量才是多源信号价值的诚实检验</b>；
-      若 full 没有增量，本项目公开承认。</p>
+      这不是独立的商业化结果标签。<code>graph_only</code> 基线仅使用共现图启发式
+      （含两跳有效电导）；full 相对它的增量才是多源信号价值的诚实检验。
+      小规模 field×year 测试集上的高 AUC 不应被视为稳定预测能力。</p>
   </div>
 
   <h2>方法论</h2>
   <div class="card note">
-    与"短语共现 + 电导"类项目的区别：① 预测目标是<b>商业信号增长</b>而非词汇共现；
+    与"短语共现 + 电导"类项目的区别：① 当前预测目标是<b>构造的 CSI 增长代理</b>而非真实商业化事件；
     ② 多源数据三角验证；③ 强基线对比（持续性 / 先验 / 纯共现图）；
     ④ walk-forward 时间验证。详见
     <a href="https://github.com/zmath01/commercial-trend">仓库</a> 的
@@ -103,7 +108,7 @@ TEMPLATE = """<!DOCTYPE html>
 
   <footer>
     Built by CI · <a href="https://github.com/zmath01/commercial-trend">zmath01/commercial-trend</a>
-    · 数据模式：__MODE__
+    · 数据模式：__MODE__ · current target = future CSI growth proxy
   </footer>
 </div>
 
