@@ -1,7 +1,7 @@
 """Watchlist: ten commercial fields with a shared arXiv taxonomy.
 
 The arXiv category list is deliberately identical to commercial-trend-fusion:
-23 categories grouped into 10 commercial fields. OpenAlex/GitHub/StackOverflow
+32 categories grouped into 15 commercial fields. OpenAlex/GitHub/StackOverflow
 signals remain field-level; arxiv_categories provides the canonical research
 scope for cross-repository comparability.
 """
@@ -70,6 +70,44 @@ FIELDS = {
                              "quantum information"],
         "github_keywords": ["quantum-computing", "quantum-algorithms", "quantum-information"],
         "so_tags": ["qiskit", "cirq", "pennylane", "quantum-computing"],
+    },
+    "quantum_materials": {
+        "label": "Quantum Materials / Electronics",
+        "arxiv_categories": ["cond-mat.mtrl-sci", "cond-mat.mes-hall", "cond-mat.str-el", "cond-mat.supr-con"],
+        "openalex_queries": ["quantum materials", "2D materials", "spintronics", "superconductivity",
+                             "strongly correlated materials", "mesoscopic physics"],
+        "github_keywords": ["quantum-materials", "2d-materials", "spintronics", "superconductivity"],
+        "so_tags": ["physics", "materials-science", "semiconductor", "superconductivity"],
+    },
+    "statistical_complex_systems": {
+        "label": "Statistical / Complex Systems / Emergence",
+        "arxiv_categories": ["cond-mat.stat-mech", "cond-mat.dis-nn"],
+        "openalex_queries": ["statistical physics", "complex systems", "phase transition",
+                             "disordered systems", "emergence"],
+        "github_keywords": ["statistical-physics", "complex-systems", "phase-transition", "agent-based-model"],
+        "so_tags": ["statistics", "simulation", "machine-learning", "physics"],
+    },
+    "quantum_simulation": {
+        "label": "Quantum Simulation / Ultracold Matter",
+        "arxiv_categories": ["cond-mat.quant-gas"],
+        "openalex_queries": ["quantum simulation", "ultracold atoms", "quantum gas", "optical lattice"],
+        "github_keywords": ["quantum-simulation", "ultracold-atoms", "optical-lattice"],
+        "so_tags": ["quantum-computing", "physics", "simulation"],
+    },
+    "photonics": {
+        "label": "Photonics / Optical Technology",
+        "arxiv_categories": ["physics.optics"],
+        "openalex_queries": ["photonics", "integrated photonics", "optical computing", "laser technology"],
+        "github_keywords": ["photonics", "silicon-photonics", "optical-computing"],
+        "so_tags": ["optics", "photonics", "laser", "fiber-optics"],
+    },
+    "computational_physics": {
+        "label": "Computational Physics / Scientific Computing",
+        "arxiv_categories": ["physics.comp-ph"],
+        "openalex_queries": ["computational physics", "scientific computing", "physics simulation",
+                             "numerical simulation"],
+        "github_keywords": ["computational-physics", "scientific-computing", "physics-simulation"],
+        "so_tags": ["python", "numpy", "scipy", "simulation"],
     },
     "chips_hardware": {
         "label": "Chips / GPU / Storage / Architecture",
