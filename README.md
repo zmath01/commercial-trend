@@ -20,7 +20,22 @@ The repository contains a **live multi-source panel snapshot covering 2015–202
 - Quantum Computing / Cryptography
 - Chips / GPU / Memory Hardware
 
-The Chips field is currently all-zero and provides no usable evidence. The canonical taxonomy in `pipeline/topics.py` is broader (15 monitoring fields), but the current live panel is not populated for all of them.
+The committed panel has data for all 8 fields listed above. The canonical taxonomy in `pipeline/topics.py` is broader (15 monitoring fields), but the current live panel is not populated for all canonical fields.
+
+### Current dashboard ranking (2025)
+
+Using the code currently in `pipeline/model.py`, the latest panel mechanically ranks the fields by `0.5 × CSI + 0.3 × repository CAGR + 0.2 × Stack Overflow CAGR` approximately as follows:
+
+1. Chips / GPU / Memory Hardware — score 1.2714
+2. Quantum Computing / Cryptography — score 1.2673
+3. Applied Mathematics — score 0.6147
+4. Computer Science (general) — score 0.6147
+5. Quantitative Finance — score 0.6061
+6. AI / Machine Learning — score 0.6050
+7. Software Engineering — score 0.5940
+8. Cryptocurrency / FinTech — score 0.0854
+
+This is a **descriptive ranking of the constructed monitoring score**, not a ranking of commercial attractiveness or expected business success.
 
 ### Current 2025 snapshot
 
@@ -33,9 +48,9 @@ The Chips field is currently all-zero and provides no usable evidence. The canon
 | Quantitative Finance | 13,877 | 1,955 | 444,100 |
 | Cryptocurrency / FinTech | 13,186 | 9,618 | 1,515,859 |
 | Quantum Computing / Cryptography | 15,909 | 65,233 | 48,837,440 |
-| Chips / GPU / Memory Hardware | 0 | 0 | 0 |
+| Chips / GPU / Memory Hardware | 13,414 | 54,813 | 49,871,655 |
 
-These are **activity proxies, not commercialization outcomes**. The very large recent Quantum and Stack Overflow values require source-level auditing of query semantics and current-year completeness before interpretation.
+These are **activity proxies, not commercialization outcomes**. The current dashboard's mechanical ranking is dominated by the explosive recent repository / Stack Overflow growth of Quantum Computing and Chips / Hardware. Because CSI is normalized within each field's own history, several fields can reach CSI = 1.0 simultaneously; this is not a cross-field market-size estimate. The very large recent Quantum and Stack Overflow values require source-level auditing of query semantics and current-year completeness before interpretation.
 
 ## What the code actually does
 
