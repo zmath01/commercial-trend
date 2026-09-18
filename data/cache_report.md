@@ -1,5 +1,7 @@
 # Cache data report
 
+> **Snapshot note (2026-09-18):** this file is a **cached-only diagnostic snapshot**, not the latest live `data/panel.json`. The latest committed live panel is 2015–2025 and currently contains non-zero Chips/Hardware data. Do not use this report as the current dashboard result; it is retained to document the state of the disk cache when this report was generated.
+
 years: 2015–2025
 mode: cached-only (no network, no synthetic sample)
 
