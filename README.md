@@ -12,10 +12,11 @@
 
 ## 追踪领域 / Tracked fields
 
-统一采用与 `commercial-trend-fusion` 相同的 **10 个商业领域 / 23 个 arXiv 分类**：
+统一采用与 `commercial-trend-fusion` 相同的 **15 个商业领域 / 32 个 arXiv 分类**：
 
 AI/ML · 应用数学 · 计算机科学 · 软件工程 · 安全/加密 · 量化金融 · 金融科技 ·
-量子计算 · 芯片（GPU/存储/架构） · 数字市场/机制设计
+量子计算 · 量子材料/电子 · 统计/复杂系统/涌现 · 量子模拟/超冷物质 · 光子学 ·
+计算物理/科学计算 · 芯片（GPU/存储/架构） · 数字市场/机制设计
 
 完整 canonical mapping 见 `pipeline/topics.py`；fusion 语料抓取配置见
 `commercial-trend-fusion/config.yaml`。
@@ -66,7 +67,7 @@ cd dist && python3 -m http.server 8000
 
 ## 部署到 GitHub Pages
 
-仓库已带 `.github/workflows/pages.yml`：push 到 `main` 或每周一 02:00 UTC
+仓库已带 `.github/workflows/pages.yml`：push 到 `main` 或每月 1 日 02:00 UTC
 自动构建并部署。首次使用需在仓库设置里
 **Settings → Pages → Build and deployment → Source 选 "GitHub Actions"**。
 
@@ -78,7 +79,7 @@ token，而不是把 token 写进代码或 workflow。
 
 ```
 pipeline/
-  topics.py    # 十领域 + 23 个 arXiv 分类映射 + CSI 权重
+  topics.py    # 十五领域 + 32 个 arXiv 分类映射 + CSI 权重
   ingest.py    # OpenAlex / GitHub / Stack Exchange 客户端 + 确定性样本生成器
   signals.py   # 增长、Kleinberg 突发、CSI、共现图与链接预测指标
   model.py     # 特征、逻辑回归、walk-forward 评估、当前排名
@@ -90,7 +91,7 @@ docs/THEORY.md # 方法论与诚实局限
 
 ## 诚实局限（先看这里再引用结论）
 
-样本量是"领域×年"（十级领域 × 十年），适合做**排序参考**，
+样本量是"领域×年"（十五级领域 × 十年），适合做**排序参考**，
 不适合做精确预测；GitHub/SO 信号天然偏向工程领域；
 OpenAlex 主题有注册延迟。详见 THEORY.md 第 4 节。
 
